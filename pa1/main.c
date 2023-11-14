@@ -17,8 +17,8 @@ static const char * const log_received_all_done_fmt;
 static const char * const log_done_fmt;
 static const char * const log_started_fmt;
 
-static char first_bffr[62] = "";//creating a buffer bffr/buffer
-static char second_bffr[71] = ""; // creating a second buffer buff
+static char first_bffr[10] = "";//creating a buffer bffr/buffer
+static char second_bffr[10]; // creating a second buffer buff
 static int fd[12][12][2]; //file descriptor
 MessageType lrm[13]; //last message that was recieved by a process
 static int closed_pipes[12][12] = {{0}}; //Describing status of a pipe beetwen process i and j. 0 - closed, 1 - onlu writing and 2 - only reading
@@ -43,6 +43,7 @@ struct Processs{
     int parallel_pro;
 };
 
+//closing pipes
 void close_pipes(local_id l_id, int child_num){
     for(int i = 0; i <= child_num; i++){
         for(int j = 0; j <= child_num; j++){
@@ -89,11 +90,11 @@ int send_multicast(void * self, const Message * msg){
 //recieve implementation
 int receive(void * self, local_id from, Message * msg) {
     struct Processs *receiver = (struct Processs *)self;
-    if (receiver->id == from) {/*perror*/printf("error on recieve\n"); return -1;}
+    if (receiver->id == from) {perror("error on recieve\n"); return -1;}
     int read_fd = fd[from][receiver->id][0];
-    if (read(read_fd, msg, sizeof(MessageHeader)) == -1) {/*perror*/printf("error on recieve\n"); return -1;}
+    if (read(read_fd, msg, sizeof(MessageHeader)) == -1) {perror("error on recieve\n"); return -1;}
     lrm[from] = msg->s_header.s_type;
-    if (read(read_fd, msg, msg->s_header.s_payload_len) == -1) {/*perror*/printf("error on reading tail\n"); return -1;}
+    if (read(read_fd, msg, msg->s_header.s_payload_len) == -1) {perror("error on reading tail\n"); return -1;}
     return 0;
 }
 
@@ -198,9 +199,9 @@ int ready_to_end(struct Processs *parent){
 
 //Synchronizing before doing work
 int ready_to_go(struct Processs *prop, int recievers){//sending started msg to all processes
-    Message msg = create_msg(STARTED, first_bffr);
+    Message msg = create_msg(STARTED, "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
     int z = 0;
-    if(prop->parent_pid != -1){if (send_multicast(prop, &msg) != 0){printf("Sendmulticast in read_to_go error\n"); return 1;}}
+    if(prop->parent_pid != -1){if (send_multicast(prop, &msg) != 0){perror("Sendmulticast in read_to_go error\n"); return 1;}}
     while (z <= 999 ){
         for (int i = 1; i <= recievers; i++) {
             if (prop->id != i) {
