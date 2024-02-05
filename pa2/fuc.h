@@ -8,6 +8,27 @@ void clear_descriptors(int *fd, int size) {
 	free(fd);
 }
 
+int history(AllHistory * his, balance_t * balance, int child_num){
+
+	int max_history_len = 0;
+		
+		for (int i = 0; i < child_num; ++i) {
+			if (his->s_history[i].s_history_len > max_history_len)
+				max_history_len = his->s_history[i].s_history_len;
+		}
+
+		for (int i = 0; i < child_num; ++i) {
+			balance = &his->s_history[i].s_history[his->s_history[i].s_history_len-1].s_balance;
+			for (int j = his->s_history[i].s_history_len; j < max_history_len; ++j) {
+				his->s_history[i].s_history[j].s_balance = *balance;
+				his->s_history[i].s_history[j].s_time = j;
+			}
+			his->s_history[i].s_history_len = max_history_len;
+		}
+		print_history(his);
+	return 0;
+}
+
 int check_on_receive(Processs *Processs, MessageType type) {
 	Message msg;
 	int status = receive_any(Processs, &msg);
@@ -67,5 +88,27 @@ int his_init(BalanceHistory * history, int id, timestamp_t time, balance_t ball)
 	history->s_history[time].s_time = time;
 	history->s_history[time].s_balance_pending_in = 0;
 
+	return 0;
+}
+
+int close_pipes(int child_num, FILE * pipes, int * fd, int id){
+	for (int i = 0; i < child_num*(child_num+1); ++i) {
+		int x = i / child_num;
+		int y = i + 1 - x * child_num;
+
+		if (x == y) {
+			y = PARENT_ID;
+			}
+
+		if (x != id) {
+			close(fd[2*i+1]);
+			fprintf(pipes, "[Closed for process %d descriptor for sending messages to process %d by process %d]\n", id, y, x);
+		}
+
+		if (y != id) {
+			close(fd[2*i]);
+			fprintf(pipes, "[Closed for process %d descriptor for receiving messages from process %d by process %d]\n", id, x, y);
+		}
+	}
 	return 0;
 }
