@@ -30,6 +30,17 @@ int check_on_receive_pa2(Processs *Processs, MessageType type1, MessageType type
 	return 0;
 }
 
+int check_on_receive_pa3(Condition *cond, MessageType type){
+	Message msg;
+	int status = receive_any(cond, &msg);
+
+	if ((status) || (msg.s_header.s_magic != MESSAGE_MAGIC) || (msg.s_header.s_type != type)) {
+		return 1;
+	}
+
+	return 0;
+}
+
 int msg_init(Message * msg, int len, MessageType type, timestamp_t time) {
 	msg->s_header.s_magic = MESSAGE_MAGIC;
 	msg->s_header.s_payload_len = len;
@@ -47,20 +58,20 @@ int msg_init_notime(Message * msg, int len, MessageType type){
 	return 0;
 }
 
-int his_inti(BalanceHistory * history, int i, balance_t ball_old){
+int his_inti(BalanceHistory * history, int i, balance_t ball_old, balance_t pend){
 		history->s_history[i].s_balance = ball_old;
 		history->s_history[i].s_time = i;
-		history->s_history[i].s_balance_pending_in = 0;
+		history->s_history[i].s_balance_pending_in = pend;
 
 		return 0;
 }
 
-int his_init(BalanceHistory * history, int id, timestamp_t time, balance_t ball){
+int his_init(BalanceHistory * history, int id, timestamp_t time, balance_t ball, balance_t pend){
 	history->s_id = id;
 	history->s_history_len = time + 1;
 
 	for (int i = 0; i < time; ++i) {
-		if(his_inti(history, i, 0) != 0){exit(99);}
+		if(his_inti(history, i, 0, 0) != 0){exit(99);}
 	}
 
 	history->s_history[time].s_balance = ball;
