@@ -1,0 +1,8 @@
+0: process 1 (pid 37760, parent 37759) has STARTED with balance $ 0
+3: process 1 received all STARTED messages
+33: process 1 has DONE with balance $ 0
+47: process 1 received all DONE messages
+0: process 2 (pid 37761, parent 37759) has STARTED with balance $ 0
+3: process 2 received all STARTED messages
+45: process 2 has DONE with balance $ 0
+47: process 2 received all DONE messages
