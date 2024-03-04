@@ -24,6 +24,3 @@ get_lamport_time(), которую необходимо реализовать. 
 ## [Лабораторная работа №4](https://github.com/RedJabka/Distributed-Applications/tree/main/pa4)
 Реализация алгоритма взаимного исключения Лэмпорта. [Более подробно](https://github.com/RedJabka/Distributed-Applications/blob/main/pa4/README_lab4.md)
 
-## [Лабораторная работа №5](https://github.com/RedJabka/Distributed-Applications/tree/main/pa5)
-Реализация алгоритма взаимного исключения Рикарта-Агравала. [Более подробно](https://github.com/RedJabka/Distributed-Applications/blob/main/pa4/README_lab4.md)
-
